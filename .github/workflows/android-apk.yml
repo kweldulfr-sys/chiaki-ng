@@ -47,9 +47,18 @@ jobs:
 
       - name: Build APK
         working-directory: android
+        shell: bash
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          set -o pipefail
+          if ./gradlew assembleDebug --no-daemon --stacktrace --info 2>&1 | tee /tmp/gradle-build.log; then
+            echo "Build succeeded"
+          else
+            status=$?
+            echo "===== KOTLIN ERRORS ====="
+            grep -n -E '(^e: |Unresolved reference|Overload resolution ambiguity|Type mismatch|Expecting |StreamActivity.kt|activity_stream.xml)' /tmp/gradle-build.log | tail -n 100 || true
+            exit "$status"
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
