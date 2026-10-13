@@ -35,6 +35,13 @@ jobs:
             "ndk;28.2.13676358" \
             "cmake;3.22.1"
 
+      - name: Install Protocol Buffers compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+          protoc --version
+
+
       - name: Build APK
         working-directory: android
         run: |
