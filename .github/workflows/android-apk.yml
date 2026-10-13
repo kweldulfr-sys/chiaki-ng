@@ -59,19 +59,7 @@ jobs:
             grep -n -E '(^e: |Unresolved reference|Overload resolution ambiguity|Type mismatch|Expecting |StreamActivity.kt|activity_stream.xml)' /tmp/gradle-build.log | tail -n 100 || true
             exit "$status"
           fi
-      - name: Show Gradle failure details
-        if: always()
-        shell: bash
-        run: |
-          if [ -f /tmp/gradle-build.log ]; then
-            echo "===== BUILD FAILURE SUMMARY ====="
-            grep -n -E 'What went wrong:|Execution failed for task|Build failed|FAILED|fatal error:| error:|CMake Error|ninja: build stopped|undefined reference|ld.lld: error|clang.*error|No such file or directory' /tmp/gradle-build.log | tail -n 100
-            echo "===== END SUMMARY ====="
-            echo "===== LAST 250 LINES ====="
-            tail -n 250 /tmp/gradle-build.log
-          else
-            echo "Gradle log not found"
-          fi
+      
 
       
       - name: Upload Kotlin error report
