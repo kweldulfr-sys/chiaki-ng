@@ -54,6 +54,7 @@ class StreamActivity : AppCompatActivity()
 	private lateinit var insetsController: WindowInsetsControllerCompat
 
 	private val uiVisibilityHandler = Handler(Looper.getMainLooper())
+	private var overlayPinned = false
 
 	override fun onCreate(savedInstanceState: Bundle?)
 	{
@@ -108,6 +109,15 @@ class StreamActivity : AppCompatActivity()
 		binding.touchpadOnlySwitch.setOnCheckedChangeListener { _, isChecked ->
 			viewModel.setTouchpadOnlyEnabled(isChecked)
 			showOverlay()
+		}
+		binding.overlayToggleButton.setOnClickListener {
+    overlayPinned = !overlayPinned
+
+    if (overlayPinned) {
+        showOverlay()
+    } else {
+        hideOverlay()
+    }
 		}
 
 		binding.displayModeToggle.addOnButtonCheckedListener { _, _, _ ->
@@ -178,36 +188,41 @@ class StreamActivity : AppCompatActivity()
 		viewModel.session.resume()
 	}
 
-	private val hideSystemUIRunnable = Runnable { hideSystemUI() }
 
-	private fun showOverlay()
-	{
-		binding.overlay.isVisible = true
-		binding.overlay.animate()
-			.alpha(1.0f)
-			.setListener(object: AnimatorListenerAdapter()
-			{
-				override fun onAnimationEnd(animation: Animator)
-				{
-					binding.overlay.alpha = 1.0f
-				}
-			})
-		uiVisibilityHandler.removeCallbacks(hideSystemUIRunnable)
-		uiVisibilityHandler.postDelayed(hideSystemUIRunnable, HIDE_UI_TIMEOUT_MS)
-	}
+private val hideSystemUIRunnable = Runnable { hideSystemUI() }
 
-	private fun hideOverlay()
-	{
-		binding.overlay.animate()
-			.alpha(0.0f)
-			.setListener(object: AnimatorListenerAdapter()
-			{
-				override fun onAnimationEnd(animation: Animator)
-				{
-					binding.overlay.isGone = true
-				}
-			})
-	}
+private fun showOverlay() {
+    binding.overlay.isVisible = true
+    binding.overlay.animate()
+        .alpha(1.0f)
+        .setListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                binding.overlay.alpha = 1.0f
+            }
+        })
+
+    uiVisibilityHandler.removeCallbacks(hideSystemUIRunnable)
+
+    if (!overlayPinned) {
+        uiVisibilityHandler.postDelayed(
+            hideSystemUIRunnable,
+            HIDE_UI_TIMEOUT_MS
+        )
+    }
+}
+
+private fun hideOverlay() {
+    if (overlayPinned) return
+
+    binding.overlay.animate()
+        .alpha(0.0f)
+        .setListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                binding.overlay.isGone = true
+            }
+        })
+}
+
 
 	override fun onWindowFocusChanged(hasFocus: Boolean)
 	{
