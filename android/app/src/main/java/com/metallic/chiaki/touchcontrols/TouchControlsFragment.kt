@@ -87,7 +87,7 @@ class DefaultTouchControlsFragment : TouchControlsFragment()
 		}}
 
 		onScreenControlsEnabled?.observe(viewLifecycleOwner, Observer {
-			view.visibility = View.GONE
+			view.visibility = if(it) View.VISIBLE else View.GONE
 		})
 	}
 
