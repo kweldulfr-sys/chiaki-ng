@@ -116,6 +116,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.button.MaterialButton
     android:id="@+id/overlayToggleButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
