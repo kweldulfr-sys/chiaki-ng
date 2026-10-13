@@ -59,6 +59,16 @@ jobs:
             grep -n -E '(^e: |Unresolved reference|Overload resolution ambiguity|Type mismatch|Expecting |StreamActivity.kt|activity_stream.xml)' /tmp/gradle-build.log | tail -n 100 || true
             exit "$status"
           fi
+      - name: Show Gradle errors
+        if: always()
+        shell: bash
+        run: |
+          if [ -f /tmp/gradle-build.log ]; then
+            grep -n -i -E -C 5 'error|failed|exception|could not|what went wrong' /tmp/gradle-build.log | tail -n 200
+          else
+            echo "Log file not found: /tmp/gradle-build.log"
+            find . /tmp -name '*gradle*log*' -type f 2>/dev/null
+          fi
 
       
       - name: Upload Kotlin error report
